@@ -1,1 +1,113 @@
+# section3.dartimport 'dart:io';
 
+void main() {
+  Map<String, List<double>> students = {};
+
+  //  Ask for number of students
+  int numberStudents = 0;
+  while (true) {
+   print("Enter number of students: ");
+    try {
+      numberStudents = int.parse(stdin.readLineSync()!);
+      if (numberStudents <= 0) {
+        print("Number of stud <=0");
+        continue;
+      }
+      break;
+    } catch (e) {
+      print("Invalid input. Please enter a valid integer.");
+    }
+  }
+
+  //  Collect student data
+  for (int i = 0; i < numberStudents; i++) {
+    print("\nEnter student name: ");
+    String name = stdin.readLineSync()!;
+    name = name.trim();
+
+    int subjects = 0;
+    while (true) {
+      print("Enter number of subjects for $name: ");
+      try {
+        subjects = int.parse(stdin.readLineSync()!);
+        if (subjects <= 0) {
+          print("Number of subjects must be greater than 0.");
+          continue;
+        }
+        break;
+      } catch (e) {
+        print("Invalid input. Please enter a valid integer.");
+      }
+    }
+
+    List<double> grades = [];
+    for (int j = 0; j < subjects; j++) {
+      while (true) {
+        print("Enter grade for subject ${j + 1}: ");
+        try {
+          double grade = double.parse(stdin.readLineSync()!);
+          if (grade < 0 || grade > 100) {
+            print("Grade must be between 0 and 100.");
+            continue;
+          }
+          grades.add(grade);
+          break;
+        } catch (e) {
+          print("Invalid input. Please enter a valid number.");
+        }
+      }
+    }
+
+    students[name] = grades;
+  }
+
+  // Step 4: Infinite loop menu
+  while (true) {
+    print("1. Show All Results");
+    print("2. Search Student");
+    print("3. Exit");
+    print("Enter your choice: ");
+
+    String choice = stdin.readLineSync()!;
+
+    if (choice == "1") {
+      print("\n All Student Results");
+      students.forEach((name, grades) {
+        double sum = grades.reduce((a, b) => a + b);
+        double avg = sum / grades.length;
+        double Percent =(sum/(grades.length*100))*100;
+        String letter = getLetterGrade(avg);
+        print("${name.toUpperCase()} | Average: ${avg.toStringAsFixed(2)} | Grade: $letter | precentage: ${Percent.ceil()}%");
+      });
+    } else if (choice == "2") {
+      print("Enter student name to search: ");
+      String searchName = stdin.readLineSync()!;
+      if (students.containsKey(searchName)) {
+        List<double> grades = students[searchName]!;
+        double avg = grades.reduce((a, b) => a + b) / grades.length;
+        print("$searchName's average grade is: ${avg.round()}"); 
+        // nearest integer
+      } else {
+        print("Student '$searchName' not found.");
+      }
+    } else if (choice == "3") {
+      print("Exiting program");
+      break;
+    } else {
+      print("Invalid choice. Please enter 1, 2, or 3.");
+    }
+  }
+}
+
+// Helper function to get letter grade
+String getLetterGrade(double avg) {
+  if (avg >= 95) return "A+";
+  if (avg >= 90&&avg<95) return "A";
+  if (avg >= 85&&avg<90) return "B+";
+  if (avg >= 80&&avg<85) return "B";
+  if (avg >= 75&&avg<80) return "C+";
+  if (avg >= 70&&avg<75) return "C";
+  if (avg >= 65&&avg<70) return "D+";
+  if (avg >= 60&&avg<65) return "D";
+  return "F";
+}
